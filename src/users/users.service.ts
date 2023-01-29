@@ -21,4 +21,17 @@ export class UsersService {
   async getAllUsers() {
     return await this.userModel.find();
   }
+
+  async getUserByUserName(username) {
+    return await this.userModel.findOne({ username: username });
+  }
+
+  async deleteAllUsers() {
+    return await this.userModel.deleteMany({});
+  }
+
+  async isUserInBase(id) {
+    const user = await this.userModel.findById(id);
+    return Boolean(user);
+  }
 }

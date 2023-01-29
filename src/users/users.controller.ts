@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
+import { CommonAuthGuard } from 'src/auth/common-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
@@ -12,7 +13,13 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(CommonAuthGuard)
   getAllUsres() {
     return this.usersService.getAllUsers();
+  }
+
+  @Delete()
+  deleteAllUsres() {
+    return this.usersService.deleteAllUsers();
   }
 }
