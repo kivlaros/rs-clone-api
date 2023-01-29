@@ -6,6 +6,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { UImage, UImageSchema } from './schemas/uimage.schema';
 import { Like, LikeSchema } from './schemas/like.schema';
 import { AuthModule } from 'src/auth/auth.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthModule } from 'src/auth/auth.module';
     MongooseModule.forFeature([{ name: UImage.name, schema: UImageSchema }]),
     MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
     forwardRef(() => AuthModule),
+    FilesModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
