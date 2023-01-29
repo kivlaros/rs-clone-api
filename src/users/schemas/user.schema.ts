@@ -17,8 +17,8 @@ export class User {
   @Prop()
   password: string;
 
-  @Prop()
-  avatar: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UImage' })
+  avatar: UImage;
 
   @Prop()
   isOnline: boolean;
