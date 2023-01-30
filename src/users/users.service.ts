@@ -6,6 +6,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Like, LikeDocument } from './schemas/like.schema';
 import { UImage, UImageDocument } from './schemas/uimage.schema';
 import { User, UserDocument } from './schemas/user.schema';
+import { Request } from 'express';
+import { JwtService } from '@nestjs/jwt/dist/jwt.service';
+
+type TokenDecryptType = {
+  username: string;
+  _id: ObjectId;
+};
 
 @Injectable()
 export class UsersService {
@@ -14,6 +21,7 @@ export class UsersService {
     @InjectModel(UImage.name) private imageModel: Model<UImageDocument>,
     @InjectModel(Like.name) private likeModel: Model<LikeDocument>,
     private readonly filesService: FilesService,
+    private jwtService: JwtService,
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -41,7 +49,8 @@ export class UsersService {
     return Boolean(user);
   }
 
-  async addPhotosToGallery(id: ObjectId, files: Array<Express.Multer.File>) {
+  async addPhotosToGallery(req: Request, files: Array<Express.Multer.File>) {
+    const id = this.tokenDecrypt(req)._id;
     //await this.deleteAllImages();
     if (!files || !files.length) {
       throw new HttpException(
@@ -60,10 +69,37 @@ export class UsersService {
       user.gallery.push(image.id);
     }
     await user.save();
-    return user.populate('gallery');
+    return user;
   }
 
-  async getAllPhotos() {
-    return await this.imageModel.find();
+  async deletImage(req: Request, id: ObjectId) {
+    //Надо реализавать удаление статики
+    const username = this.tokenDecrypt(req).username;
+    const user = await this.userModel.findOne({ username: username });
+    try {
+      const image = await this.imageModel.findById(id).populate('author');
+      if (!image || username !== image.author.username) {
+        throw new HttpException(
+          'The image does not exist or you do not have enough rights',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      // const userImagesArr = user.gallery.filter((e) => e._id !== image);
+      // user.gallery = [...userImagesArr];
+      // await user.save();
+      await image.delete();
+      return { message: `image delete is succsess` };
+    } catch {
+      throw new HttpException(
+        'The image does not exist or you do not have enough rights',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+  }
+
+  tokenDecrypt(req: Request): TokenDecryptType {
+    const token = req.headers.authorization.split(' ')[1];
+    const data = this.jwtService.decode(token) as TokenDecryptType;
+    return data;
   }
 }

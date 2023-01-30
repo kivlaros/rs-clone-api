@@ -9,6 +9,13 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from './dto/login.dto';
+import { Request } from 'express';
+import { ObjectId } from 'mongoose';
+
+type TokenDecryptType = {
+  username: string;
+  _id: ObjectId;
+};
 
 @Injectable()
 export class AuthService {
@@ -56,5 +63,11 @@ export class AuthService {
       });
     }
     return user;
+  }
+
+  tokenDecrypt(req: Request): TokenDecryptType {
+    const token = req.headers.authorization.split(' ')[1];
+    const data = this.jwtService.decode(token) as TokenDecryptType;
+    return data;
   }
 }

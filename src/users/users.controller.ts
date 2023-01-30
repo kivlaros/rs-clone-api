@@ -5,15 +5,17 @@ import {
   Get,
   Param,
   Post,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ObjectId } from 'mongoose';
 import { CommonAuthGuard } from 'src/auth/common-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { Request } from 'express';
+import { ObjectId } from 'mongoose';
 
 @Controller('users')
 export class UsersController {
@@ -35,17 +37,19 @@ export class UsersController {
     return this.usersService.deleteAllUsers();
   }
 
-  @Post('/gallery/:id')
+  @Post('images')
+  @UseGuards(CommonAuthGuard)
   @UseInterceptors(FilesInterceptor('files'))
-  addPhotosToGallery(
-    @Param('id') id: ObjectId,
+  addImagesToGallery(
+    @Req() req: Request,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    return this.usersService.addPhotosToGallery(id, files);
+    return this.usersService.addPhotosToGallery(req, files);
   }
 
-  @Get('photos')
-  getAllPhotos() {
-    return this.usersService.getAllPhotos();
+  @Delete('/images/:id')
+  @UseGuards(CommonAuthGuard)
+  deleteImage(@Req() request: Request, @Param('id') id: ObjectId) {
+    return this.usersService.deletImage(request, id);
   }
 }

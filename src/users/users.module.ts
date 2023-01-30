@@ -10,10 +10,10 @@ import { FilesModule } from 'src/files/files.module';
 
 @Module({
   imports: [
+    forwardRef(() => AuthModule),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: UImage.name, schema: UImageSchema }]),
     MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
-    forwardRef(() => AuthModule),
     FilesModule,
   ],
   controllers: [UsersController],
