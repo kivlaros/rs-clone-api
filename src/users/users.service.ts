@@ -75,7 +75,9 @@ export class UsersService {
   async deletImage(req: Request, id: ObjectId) {
     //Надо реализавать удаление статики
     const username = this.tokenDecrypt(req).username;
-    const user = await this.userModel.findOne({ username: username });
+    const user = await this.userModel
+      .findOne({ username: username })
+      .populate('gallery');
     try {
       const image = await this.imageModel.findById(id).populate('author');
       if (!image || username !== image.author.username) {
@@ -84,9 +86,9 @@ export class UsersService {
           HttpStatus.FORBIDDEN,
         );
       }
-      // const userImagesArr = user.gallery.filter((e) => e._id !== image);
-      // user.gallery = [...userImagesArr];
-      // await user.save();
+      const userImagesArr = user.gallery.filter((e) => e.id !== image.id);
+      user.gallery = [...userImagesArr];
+      await user.save();
       await image.delete();
       return { message: `image delete is succsess` };
     } catch {
@@ -95,6 +97,71 @@ export class UsersService {
         HttpStatus.FORBIDDEN,
       );
     }
+  }
+
+  async getAllUserImages(req: Request) {
+    const userId = this.tokenDecrypt(req)._id;
+    return await this.imageModel.find({ author: userId });
+  }
+
+  async uploadAvatar(request: Request, file: Express.Multer.File) {
+    const userId = this.tokenDecrypt(request)._id;
+    const user = await this.userModel.findById(userId);
+    const fileLink = await this.filesService.createFile(file);
+    const image = await this.imageModel.create({
+      author: user._id,
+      date: new Date(),
+      imgLink: fileLink,
+    });
+    user.avatar = image;
+    await user.save();
+    return image;
+  }
+
+  async deleteAvatar(request: Request) {
+    //Надо реализавать удаление статики
+    const userId = this.tokenDecrypt(request)._id;
+    const user = await this.userModel.findById(userId).populate('avatar');
+    await user.avatar.delete();
+    user.avatar = undefined;
+    await user.save();
+    return { message: 'avatar delete is succsess' };
+  }
+
+  async addInSubs(request: Request, subId: ObjectId) {
+    const userId = this.tokenDecrypt(request)._id;
+    const user = await this.userModel
+      .findById(userId)
+      .populate('subscriptions');
+    const isSubs = user.subscriptions.some((e) => e.id == subId);
+    if (user.id == subId || isSubs) {
+      throw new HttpException(
+        'You have already subscribed to this person',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    try {
+      const userSub = await this.userModel.findById(subId);
+      user.subscriptions.push(userSub);
+      await user.save();
+      return user.subscriptions;
+    } catch {
+      throw new HttpException(
+        'The user id is specified incorrectly',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+  }
+
+  async deleteFromSubs(request: Request, subsId: ObjectId) {
+    const userId = this.tokenDecrypt(request)._id;
+    const user = await this.userModel
+      .findById(userId)
+      .populate('subscriptions');
+    const subsArr = user.subscriptions.filter((e) => e.id !== subsId);
+    user.subscriptions = [...subsArr];
+    await user.save();
+    return user.subscriptions;
   }
 
   tokenDecrypt(req: Request): TokenDecryptType {

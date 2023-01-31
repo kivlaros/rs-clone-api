@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { UPost } from 'src/posts/schemas/upost.schema';
-import { UImage } from './uimage.schema';
+import { UPostDocument } from 'src/posts/schemas/upost.schema';
+import { UImageDocument } from './uimage.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -18,7 +18,7 @@ export class User {
   password: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UImage' })
-  avatar: UImage;
+  avatar: UImageDocument;
 
   @Prop()
   isOnline: boolean;
@@ -27,13 +27,13 @@ export class User {
   lastVisit: Date;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  subscriptions: User[];
+  subscriptions: UserDocument[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UImage' }] })
-  gallery: UImage[];
+  gallery: UImageDocument[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UPost' }] })
-  posts: UPost[];
+  posts: UPostDocument[];
 
   @Prop()
   chats: string[];

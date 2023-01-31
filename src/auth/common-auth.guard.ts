@@ -34,7 +34,8 @@ export class CommonAuthGuard implements CanActivate {
           message: 'The user is not logged in',
         });
       }
-      const userPl = this.jwtService.decode(token) as UserType;
+      const userPl = this.jwtService.verify(token) as UserType;
+      console.log(userPl);
       return this.usersService.isUserInBase(userPl._id);
     } catch (e) {
       throw new UnauthorizedException({
