@@ -8,6 +8,7 @@ import { Comment, CommentDocument } from './schemas/comment.schema';
 import { UPost, UPostDocument } from './schemas/upost.schema';
 import { Request } from 'express';
 import { CreatePostDto } from './dto/crate-post.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Injectable()
 export class PostsService {
@@ -47,6 +48,10 @@ export class PostsService {
     return await this.postModel.find();
   }
 
+  async getUserPosts(id: ObjectId) {
+    return await this.postModel.find({ author: id });
+  }
+
   async deletePost(req: Request, postId: ObjectId) {
     const userId = this.authService.tokenDecrypt(req);
     const user = await this.usersService.getUserById(userId);
@@ -63,6 +68,28 @@ export class PostsService {
       user.posts = [...postsArr];
       await user.save();
       return await post.delete();
+    } catch {
+      throw new HttpException(
+        'The post does not exist or you do not have enough rights',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+  }
+
+  async createComment(req: Request, dto: CreateCommentDto, postId: ObjectId) {
+    const userId = this.authService.tokenDecrypt(req);
+    const user = await this.usersService.getUserById(userId);
+    try {
+      const post = await this.postModel.findById(postId);
+      const comment = await this.commentModel.create({
+        text: dto.text,
+        date: new Date(),
+        author: user._id,
+      });
+      await post.populate('comments');
+      post.comments.push(comment);
+      await post.save();
+      return post.comments;
     } catch {
       throw new HttpException(
         'The post does not exist or you do not have enough rights',
