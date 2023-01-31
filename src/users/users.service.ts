@@ -28,6 +28,10 @@ export class UsersService {
     return await this.userModel.create({ ...dto });
   }
 
+  async getUserById(id) {
+    return await this.userModel.findById(id);
+  }
+
   async getAllUsers() {
     return await this.userModel.find();
   }
