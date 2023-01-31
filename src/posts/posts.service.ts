@@ -9,6 +9,7 @@ import { UPost, UPostDocument } from './schemas/upost.schema';
 import { Request } from 'express';
 import { CreatePostDto } from './dto/crate-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { marked } from 'marked';
 
 @Injectable()
 export class PostsService {
@@ -25,7 +26,6 @@ export class PostsService {
     files: Array<Express.Multer.File>,
     dto: CreatePostDto,
   ) {
-    console.log('start');
     const userId = this.authService.tokenDecrypt(req);
     const user = await this.usersService.getUserById(userId);
     const filesArr: string[] = [];
@@ -82,7 +82,7 @@ export class PostsService {
     try {
       const post = await this.postModel.findById(postId);
       const comment = await this.commentModel.create({
-        text: dto.text,
+        text: marked.parse(dto.text),
         date: new Date(),
         author: user._id,
       });
