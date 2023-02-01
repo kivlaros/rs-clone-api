@@ -22,7 +22,7 @@ export class UsersController {
 
   @Get()
   @UseGuards(CommonAuthGuard)
-  getAllUsres() {
+  getAllUsers() {
     return this.usersService.getAllUsers();
   }
 

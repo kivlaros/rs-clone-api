@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { UPostDocument } from 'src/posts/schemas/upost.schema';
 import { UImageDocument } from './uimage.schema';
+import { ChatDocument } from 'src/chats/schemas/chat.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -35,8 +36,8 @@ export class User {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UPost' }] })
   posts: UPostDocument[];
 
-  @Prop()
-  chats: string[];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }] })
+  chats: ChatDocument[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

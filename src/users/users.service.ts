@@ -33,7 +33,7 @@ export class UsersService {
   }
 
   async getAllUsers() {
-    return await this.userModel.find();
+    return await this.userModel.find().populate('chats');
   }
 
   async getUserByUserName(username: string) {
