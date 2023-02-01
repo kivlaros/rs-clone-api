@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { UserDocument } from 'src/users/schemas/user.schema';
-import { LikeDocument } from './like.schema';
+import { LikeDocument } from '../../likes/schemas/like.schema';
 
 export type UImageDocument = HydratedDocument<UImage>;
 
@@ -17,7 +17,7 @@ export class UImage {
   @Prop()
   imgLink: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Like' })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }] })
   likes: LikeDocument[];
 }
 

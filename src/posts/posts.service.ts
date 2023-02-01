@@ -48,6 +48,10 @@ export class PostsService {
     return await this.postModel.find();
   }
 
+  async getPostById(id) {
+    return await this.postModel.findById(id).populate('author');
+  }
+
   async getUserPosts(id: ObjectId) {
     return await this.postModel.find({ author: id });
   }

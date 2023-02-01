@@ -8,7 +8,7 @@ export type LikeDocument = HydratedDocument<Like>;
 @Schema()
 export class Like {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  users: UserDocument;
+  author: UserDocument;
 
   @Prop()
   date: Date;

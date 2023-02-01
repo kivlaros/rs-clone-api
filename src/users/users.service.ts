@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Like, LikeDocument } from './schemas/like.schema';
 import { UImage, UImageDocument } from './schemas/uimage.schema';
 import { User, UserDocument } from './schemas/user.schema';
 import { Request } from 'express';
@@ -19,7 +18,6 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(UImage.name) private imageModel: Model<UImageDocument>,
-    @InjectModel(Like.name) private likeModel: Model<LikeDocument>,
     private readonly filesService: FilesService,
     private jwtService: JwtService,
   ) {}
@@ -46,6 +44,10 @@ export class UsersService {
 
   async deleteAllImages() {
     return await this.imageModel.deleteMany({});
+  }
+
+  async getImageById(id) {
+    return await this.imageModel.findById(id).populate('author');
   }
 
   async isUserInBase(id) {

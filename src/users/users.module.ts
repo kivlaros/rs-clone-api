@@ -4,7 +4,6 @@ import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { UImage, UImageSchema } from './schemas/uimage.schema';
-import { Like, LikeSchema } from './schemas/like.schema';
 import { AuthModule } from 'src/auth/auth.module';
 import { FilesModule } from 'src/files/files.module';
 
@@ -13,7 +12,6 @@ import { FilesModule } from 'src/files/files.module';
     forwardRef(() => AuthModule),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: UImage.name, schema: UImageSchema }]),
-    MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
     FilesModule,
   ],
   controllers: [UsersController],
