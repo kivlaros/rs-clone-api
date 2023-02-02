@@ -17,6 +17,6 @@ export class LikesController {
   @Post('/post/:id')
   @UseGuards(CommonAuthGuard)
   postLikeToPost(@Req() req: Request, @Param('id') id: ObjectId) {
-    return '';
+    return this.likesService.postLikeToPost(req, id);
   }
 }

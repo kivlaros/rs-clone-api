@@ -25,7 +25,6 @@ export class LikesService {
     try {
       const image = await this.usersService.getImageById(imageId);
       await image.populate('likes');
-      console.log('test');
       return await this.likesAddOrDelete(user, image);
     } catch {
       throw new HttpException(
@@ -36,17 +35,29 @@ export class LikesService {
   }
 
   async postLikeToPost(req: Request, postId: ObjectId) {
-    return '';
+    const userId = this.authService.tokenDecrypt(req);
+    const user = await this.usersService.getUserById(userId);
+    try {
+      const post = await this.postsService.getPostById(postId);
+      await post.populate('likes');
+      return await this.likesAddOrDelete(user, post);
+    } catch {
+      throw new HttpException(
+        'The post does not exist or you do not have enough rights',
+        HttpStatus.FORBIDDEN,
+      );
+    }
   }
 
   async likesAddOrDelete(
     user: UserDocument,
     target: UImageDocument | UPostDocument,
   ) {
-    const isLiked = target.likes.some((e) => e.author._id == user._id);
-    console.log(isLiked);
+    const isLiked = target.likes.some((e) => e.author.toString() == user.id);
     if (isLiked) {
-      const likesArr = target.likes.filter((e) => e.author.id !== user.id);
+      const likesArr = target.likes.filter(
+        (e) => e.author.toString() !== user.id,
+      );
       target.likes = [...likesArr];
       await target.save();
       const like = await this.likeModel.findOne({ author: user.id });
@@ -56,9 +67,13 @@ export class LikesService {
         author: user._id,
         date: new Date(),
       });
-      target.likes.push(like.id);
+      target.likes.push(like);
       await target.save();
     }
     return target;
+  }
+
+  async deleteAllLikes() {
+    await this.likeModel.deleteMany({});
   }
 }
