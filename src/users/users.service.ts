@@ -27,7 +27,21 @@ export class UsersService {
   }
 
   async getUserById(id) {
-    return await this.userModel.findById(id);
+    try {
+      return await this.userModel.findById(id);
+    } catch {
+      throw new HttpException('User not found', HttpStatus.FORBIDDEN);
+    }
+  }
+
+  async getUserInDetail(id: ObjectId) {
+    try {
+      return await this.userModel
+        .findById(id)
+        .populate(['gallery', 'posts', 'subscriptions']);
+    } catch {
+      throw new HttpException('User not found', HttpStatus.FORBIDDEN);
+    }
   }
 
   async getAllUsers() {

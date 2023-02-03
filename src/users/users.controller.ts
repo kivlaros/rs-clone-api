@@ -26,6 +26,12 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
+  @Get(':id')
+  @UseGuards(CommonAuthGuard)
+  getUser(@Param('id') id: ObjectId) {
+    return this.usersService.getUserInDetail(id);
+  }
+
   @Get('images')
   @UseGuards(CommonAuthGuard)
   getAllUserImages(@Req() req: Request) {

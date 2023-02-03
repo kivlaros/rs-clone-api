@@ -12,7 +12,7 @@ import { LoginUserDto } from './dto/login.dto';
 import { Request } from 'express';
 import { ObjectId } from 'mongoose';
 
-type TokenDecryptType = {
+export type TokenDecryptType = {
   username: string;
   _id: ObjectId;
 };
