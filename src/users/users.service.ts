@@ -38,14 +38,16 @@ export class UsersService {
     try {
       return await this.userModel
         .findById(id)
-        .populate(['gallery', 'posts', 'subscriptions']);
+        .populate(['gallery', 'posts', 'subscriptions', 'avatar']);
     } catch {
       throw new HttpException('User not found', HttpStatus.FORBIDDEN);
     }
   }
 
   async getAllUsers() {
-    return await this.userModel.find().populate('chats');
+    return await this.userModel
+      .find()
+      .populate(['gallery', 'posts', 'subscriptions', 'avatar']);
   }
 
   async getUserByUserName(username: string) {
