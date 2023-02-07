@@ -82,7 +82,7 @@ export class ChatsService {
     return chat.messages;
   }
 
-  async getChatByID(id: ObjectId): Promise<ChatDocument> {
-    return await this.chatModel.findById(id);
+  async getChatByID(id: ObjectId) {
+    return await this.chatModel.findById(id).populate('messages');
   }
 }
