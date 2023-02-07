@@ -9,6 +9,7 @@ import { Request } from 'express';
 import { ObjectId } from 'mongoose';
 import { UserDocument } from 'src/users/schemas/user.schema';
 import { MessageDto } from './dto/message.dto';
+import { EventsService } from 'src/events/events.service';
 
 @Injectable()
 export class ChatsService {
@@ -17,6 +18,7 @@ export class ChatsService {
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
+    private readonly eventsService: EventsService,
   ) {}
 
   async create(req: Request, targetId: ObjectId) {
@@ -76,6 +78,11 @@ export class ChatsService {
     await chat.populate('messages');
     chat.messages.push(message); //???
     await chat.save();
+    this.eventsService.emit(id.toString(), chat); //событие чата
     return chat.messages;
+  }
+
+  async getChatByID(id: ObjectId): Promise<ChatDocument> {
+    return await this.chatModel.findById(id);
   }
 }

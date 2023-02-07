@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Req,
+  Sse,
   UseGuards,
 } from '@nestjs/common';
 import { CommonAuthGuard } from 'src/auth/common-auth.guard';
@@ -12,10 +13,14 @@ import { ChatsService } from './chats.service';
 import { Request } from 'express';
 import { ObjectId } from 'mongoose';
 import { MessageDto } from './dto/message.dto';
+import { EventsService } from 'src/events/events.service';
 
 @Controller('chats')
 export class ChatsController {
-  constructor(private readonly chatsService: ChatsService) {}
+  constructor(
+    private readonly chatsService: ChatsService,
+    private readonly eventsService: EventsService,
+  ) {}
 
   @Post(':id')
   @UseGuards(CommonAuthGuard)
@@ -37,5 +42,10 @@ export class ChatsController {
     @Body() dto: MessageDto,
   ) {
     return this.chatsService.createMessage(req, id, dto);
+  }
+
+  @Sse('/sse/:id')
+  sse(@Param('id') id: ObjectId) {
+    return this.eventsService.subscribe(id.toString());
   }
 }

@@ -1,3 +1,4 @@
+import { EventsModule } from './../events/events.module';
 import { Module } from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import { ChatsController } from './chats.controller';
@@ -14,8 +15,10 @@ import { AuthModule } from 'src/auth/auth.module';
     MongooseModule.forFeature([{ name: Message.name, schema: CommentSchema }]),
     UsersModule,
     AuthModule,
+    EventsModule,
   ],
   controllers: [ChatsController],
   providers: [ChatsService],
+  exports: [ChatsService],
 })
 export class ChatsModule {}

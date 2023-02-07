@@ -8,6 +8,7 @@ import { FilesModule } from './files/files.module';
 import * as path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { LikesModule } from './likes/likes.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { LikesModule } from './likes/likes.module';
     AuthModule,
     FilesModule,
     LikesModule,
+    EventsModule,
   ],
   controllers: [],
   providers: [],
