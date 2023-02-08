@@ -60,7 +60,16 @@ export class ChatsService {
   }
 
   async getUserChats(user: UserDocument) {
-    const allChatsArr = await this.chatModel.find().populate('users');
+    const allChatsArr = await this.chatModel.find().populate([
+      {
+        path: 'messages',
+        populate: { path: 'author', populate: { path: 'avatar' } },
+      },
+      {
+        path: 'users',
+        populate: { path: 'avatar' },
+      },
+    ]);
     return allChatsArr.filter(
       (e) => e.users[0].id == user.id || e.users[1].id == user.id,
     );
@@ -78,11 +87,30 @@ export class ChatsService {
     await chat.populate('messages');
     chat.messages.push(message); //???
     await chat.save();
+    await chat.populate([
+      {
+        path: 'messages',
+        populate: { path: 'author', populate: { path: 'avatar' } },
+      },
+      {
+        path: 'users',
+        populate: { path: 'avatar' },
+      },
+    ]);
     this.eventsService.emit(id.toString(), chat); //событие чата
     return chat.messages;
   }
 
   async getChatByID(id: ObjectId) {
-    return await this.chatModel.findById(id).populate('messages');
+    return await this.chatModel.findById(id).populate([
+      {
+        path: 'messages',
+        populate: { path: 'author', populate: { path: 'avatar' } },
+      },
+      {
+        path: 'users',
+        populate: { path: 'avatar' },
+      },
+    ]);
   }
 }
