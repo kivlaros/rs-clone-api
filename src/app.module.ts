@@ -13,7 +13,7 @@ import { EventsModule } from './events/events.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, 'static'),
+      rootPath: path.resolve(__dirname, '..', 'static'),
     }),
     MongooseModule.forRoot(
       'mongodb+srv://jh0ske:e0Jo3mvxwArkK1PB@cluster0.gebarog.mongodb.net/?retryWrites=true&w=majority',

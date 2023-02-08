@@ -23,7 +23,10 @@ export class UsersService {
   ) {}
 
   async createUser(dto: CreateUserDto) {
-    return await this.userModel.create({ ...dto });
+    return await this.userModel.create({
+      ...dto,
+      avatar: this.filesService.userPlceholder.id,
+    });
   }
 
   async getUserById(id) {
@@ -42,6 +45,14 @@ export class UsersService {
     } catch {
       throw new HttpException('User not found', HttpStatus.FORBIDDEN);
     }
+  }
+  async createDefaultAvatar() {
+    const img = await this.imageModel.create({
+      author: '63e2136adcdf6da860742929',
+      date: new Date(),
+      imgLink: this.filesService.userPlceholder.link,
+    });
+    console.log(img);
   }
 
   async getAllUsers() {
