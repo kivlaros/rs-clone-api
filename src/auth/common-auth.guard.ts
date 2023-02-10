@@ -36,6 +36,7 @@ export class CommonAuthGuard implements CanActivate {
       }
       const userPl = this.jwtService.verify(token) as UserType;
       console.log(userPl);
+      this.usersService.updateLastActivity(userPl._id);
       return this.usersService.isUserInBase(userPl._id);
     } catch (e) {
       throw new UnauthorizedException({

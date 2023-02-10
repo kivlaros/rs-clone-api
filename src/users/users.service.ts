@@ -206,6 +206,12 @@ export class UsersService {
     return user.subscriptions;
   }
 
+  async updateLastActivity(userId: string) {
+    const user = await this.userModel.findById(userId);
+    user.lastVisit = new Date();
+    await user.save();
+  }
+
   tokenDecrypt(req: Request): TokenDecryptType {
     const token = req.headers.authorization.split(' ')[1];
     const data = this.jwtService.decode(token) as TokenDecryptType;

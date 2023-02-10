@@ -22,7 +22,9 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    this.updateOnlineStatus();
+  }
 
   async registration(dto: CreateUserDto) {
     const candidate = await this.usersService.getUserByUserName(dto.username);
@@ -69,5 +71,26 @@ export class AuthService {
     const token = req.headers.authorization.split(' ')[1];
     const data = this.jwtService.decode(token) as TokenDecryptType;
     return data;
+  }
+
+  updateOnlineStatus() {
+    setInterval(async () => {
+      const users = await this.usersService.getAllUsers();
+      for (const user of users) {
+        if (!user.lastVisit) {
+          user.lastVisit = new Date();
+        }
+        const now = new Date().valueOf();
+        const last = new Date(user.lastVisit).valueOf();
+        const timeDife = (now - last) / 1000;
+        console.log(timeDife, user.isOnline);
+        if (timeDife > 450) {
+          user.isOnline = false;
+        } else {
+          user.isOnline = true;
+        }
+        user.save();
+      }
+    }, 100000);
   }
 }
