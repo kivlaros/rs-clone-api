@@ -102,7 +102,7 @@ export class UsersService {
       user.gallery.push(image.id);
     }
     await user.save();
-    return user;
+    return this.getUserIdImages(user.id);
   }
 
   async deletImage(req: Request, id: ObjectId) {
@@ -138,7 +138,12 @@ export class UsersService {
   }
 
   async getUserIdImages(userId: ObjectId) {
-    return await this.imageModel.find({ author: userId });
+    return await this.imageModel.find({ author: userId }).populate([
+      {
+        path: 'author',
+        populate: { path: 'avatar' },
+      },
+    ]);
   }
 
   async uploadAvatar(request: Request, file: Express.Multer.File) {
