@@ -31,7 +31,11 @@ export class ChatsService {
         (e) => e.users[0].id == targetUser.id || e.users[1].id == targetUser.id,
       );
       if (isChatAlready) {
-        throw new HttpException('Chat already exist', HttpStatus.BAD_REQUEST);
+        const existChat = allChats.find(
+          (e) =>
+            e.users[0].id == targetUser.id || e.users[1].id == targetUser.id,
+        );
+        return { message: 'chat is already exist', chat: existChat.id };
       }
       const chat = await this.chatModel.create({
         users: [user._id, targetUser._id],

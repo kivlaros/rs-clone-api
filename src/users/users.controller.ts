@@ -38,6 +38,12 @@ export class UsersController {
     return this.usersService.getAllUserImages(req);
   }
 
+  @Get('/images/:id')
+  @UseGuards(CommonAuthGuard)
+  getUserIdImages(@Param('id') id: ObjectId) {
+    return this.usersService.getUserIdImages(id);
+  }
+
   @Post('images')
   @UseGuards(CommonAuthGuard)
   @UseInterceptors(FilesInterceptor('files'))

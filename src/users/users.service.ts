@@ -137,6 +137,10 @@ export class UsersService {
     return await this.imageModel.find({ author: userId });
   }
 
+  async getUserIdImages(userId: ObjectId) {
+    return await this.imageModel.find({ author: userId });
+  }
+
   async uploadAvatar(request: Request, file: Express.Multer.File) {
     const userId = this.tokenDecrypt(request)._id;
     const user = await this.userModel.findById(userId);
