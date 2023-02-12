@@ -24,7 +24,15 @@ export class LikesService {
     const user = await this.usersService.getUserById(userId);
     try {
       const image = await this.usersService.getImageById(imageId);
-      await image.populate('likes');
+      await image.populate([
+        {
+          path: 'author',
+          populate: { path: 'avatar' },
+        },
+        {
+          path: 'likes',
+        },
+      ]);
       return await this.likesAddOrDelete(user, image);
     } catch {
       throw new HttpException(

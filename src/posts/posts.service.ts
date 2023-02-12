@@ -45,7 +45,16 @@ export class PostsService {
   }
 
   async getAllPosts() {
-    return await this.postModel.find();
+    return await this.postModel.find().populate([
+      {
+        path: 'comments',
+        populate: { path: 'author', populate: { path: 'avatar' } },
+      },
+      {
+        path: 'author',
+        populate: { path: 'avatar' },
+      },
+    ]);
   }
 
   async getPostById(id) {

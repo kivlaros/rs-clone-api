@@ -151,6 +151,9 @@ export class UsersService {
         path: 'author',
         populate: { path: 'avatar' },
       },
+      {
+        path: 'likes',
+      },
     ]);
     return images.filter(
       (e) => e.imgLink !== this.filesService.userPlceholder.link,
