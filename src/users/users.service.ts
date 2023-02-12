@@ -46,13 +46,21 @@ export class UsersService {
       throw new HttpException('User not found', HttpStatus.FORBIDDEN);
     }
   }
-  async createDefaultAvatar() {
+  async createDefaultAvatar(id: string) {
     const img = await this.imageModel.create({
-      author: '63e2136adcdf6da860742929',
+      author: id,
       date: new Date(),
       imgLink: this.filesService.userPlceholder.link,
     });
-    console.log(img);
+    return img;
+  }
+
+  async setDefaultAvatar() {
+    const users = await this.userModel.find();
+    for (const user of users) {
+      user.avatar = await this.createDefaultAvatar(user.id);
+      await user.save();
+    }
   }
 
   async getAllUsers() {
@@ -123,7 +131,7 @@ export class UsersService {
       user.gallery = [...userImagesArr];
       await user.save();
       await image.delete();
-      return { message: `image delete is succsess` };
+      return await this.getUserIdImages(user.id);
     } catch {
       throw new HttpException(
         'The image does not exist or you do not have enough rights',
@@ -138,12 +146,15 @@ export class UsersService {
   }
 
   async getUserIdImages(userId: ObjectId) {
-    return await this.imageModel.find({ author: userId }).populate([
+    const images = await this.imageModel.find({ author: userId }).populate([
       {
         path: 'author',
         populate: { path: 'avatar' },
       },
     ]);
+    return images.filter(
+      (e) => e.imgLink !== this.filesService.userPlceholder.link,
+    );
   }
 
   async uploadAvatar(request: Request, file: Express.Multer.File) {
