@@ -154,6 +154,7 @@ export class UsersService {
   }
 
   async getUserIdImages(userId: ObjectId) {
+    const user = await this.userModel.findById(userId).populate('avatar');
     const images = await this.imageModel.find({ author: userId }).populate([
       {
         path: 'author',
@@ -164,7 +165,11 @@ export class UsersService {
       },
     ]);
     return images
-      .filter((e) => e.imgLink !== this.filesService.userPlceholder.link)
+      .filter(
+        (e) =>
+          e.imgLink !== this.filesService.userPlceholder.link &&
+          e.id !== user.avatar.id,
+      )
       .reverse();
   }
 
