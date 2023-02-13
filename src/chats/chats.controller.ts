@@ -36,8 +36,8 @@ export class ChatsController {
 
   @Get(':id')
   @UseGuards(CommonAuthGuard)
-  getChatById(@Param('id') id: ObjectId) {
-    return this.chatsService.getChatByID(id);
+  getChatById(@Param('id') id: ObjectId, @Req() req: Request) {
+    return this.chatsService.getChatByID(id, req);
   }
 
   @Post('/message/:id')

@@ -9,6 +9,8 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CommonAuthGuard } from 'src/auth/common-auth.guard';
 import { PostsService } from './posts.service';
@@ -24,6 +26,7 @@ export class PostsController {
 
   @Post()
   @UseGuards(CommonAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(FilesInterceptor('files'))
   create(
     @Req() req: Request,

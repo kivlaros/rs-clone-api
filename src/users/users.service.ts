@@ -23,10 +23,18 @@ export class UsersService {
   ) {}
 
   async createUser(dto: CreateUserDto) {
-    return await this.userModel.create({
+    const user = await this.userModel.create({
       ...dto,
       avatar: this.filesService.userPlceholder.id,
     });
+    const img = await this.imageModel.create({
+      author: user.id,
+      imgLink: 'user_placeholder.jpg',
+      date: new Date(),
+    });
+    user.avatar = img.id;
+    await user.save();
+    return user;
   }
 
   async getUserById(id) {
@@ -155,9 +163,9 @@ export class UsersService {
         path: 'likes',
       },
     ]);
-    return images.filter(
-      (e) => e.imgLink !== this.filesService.userPlceholder.link,
-    );
+    return images
+      .filter((e) => e.imgLink !== this.filesService.userPlceholder.link)
+      .reverse();
   }
 
   async uploadAvatar(request: Request, file: Express.Multer.File) {

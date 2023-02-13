@@ -74,9 +74,13 @@ export class ChatsService {
         populate: { path: 'avatar' },
       },
     ]);
-    return allChatsArr.filter(
-      (e) => e.users[0].id == user.id || e.users[1].id == user.id,
-    );
+    return allChatsArr
+      .filter((e) => e.users[0].id == user.id || e.users[1].id == user.id)
+      .filter((e) => e.messages.length)
+      .sort(
+        (a, b) =>
+          b.messages.at(-1).date.valueOf() - a.messages.at(-1).date.valueOf(),
+      );
   }
 
   async createMessage(req: Request, id: ObjectId, dto: MessageDto) {
@@ -87,6 +91,7 @@ export class ChatsService {
       ...dto,
       author: user._id,
       date: new Date(),
+      isRead: false,
     });
     await chat.populate('messages');
     chat.messages.push(message); //???
@@ -105,8 +110,9 @@ export class ChatsService {
     return chat.messages;
   }
 
-  async getChatByID(id: ObjectId) {
-    return await this.chatModel.findById(id).populate([
+  async getChatByID(id: ObjectId, req: Request) {
+    const userId = this.authService.tokenDecrypt(req)._id;
+    const chat = await this.chatModel.findById(id).populate([
       {
         path: 'messages',
         populate: { path: 'author', populate: { path: 'avatar' } },
@@ -116,5 +122,15 @@ export class ChatsService {
         populate: { path: 'avatar' },
       },
     ]);
+    this.setIsRead(chat.messages, userId);
+    return chat;
+  }
+
+  async setIsRead(messages: MessageDocument[], id: ObjectId) {
+    const filtredMeassges = messages.filter((e) => e.author.id !== id);
+    for (const message of filtredMeassges) {
+      message.isRead = true;
+      message.save();
+    }
   }
 }

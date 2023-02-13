@@ -34,7 +34,8 @@ export class PostsService {
       filesArr.push(link);
     }
     const post = await this.postModel.create({
-      ...dto,
+      headline: dto.headline,
+      text: marked.parse(dto.text),
       author: user._id,
       images: filesArr,
       date: new Date(),
@@ -95,7 +96,7 @@ export class PostsService {
     try {
       const post = await this.postModel.findById(postId);
       const comment = await this.commentModel.create({
-        text: marked.parse(dto.text),
+        text: dto.text,
         date: new Date(),
         author: user._id,
       });
