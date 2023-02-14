@@ -47,9 +47,21 @@ export class UsersService {
 
   async getUserInDetail(id: ObjectId) {
     try {
-      return await this.userModel
-        .findById(id)
-        .populate(['gallery', 'posts', 'subscriptions', 'avatar']);
+      return await this.userModel.findById(id).populate([
+        {
+          path: 'subscriptions',
+          populate: { path: 'avatar' },
+        },
+        {
+          path: 'gallery',
+        },
+        {
+          path: 'posts',
+        },
+        {
+          path: 'avatar',
+        },
+      ]);
     } catch {
       throw new HttpException('User not found', HttpStatus.FORBIDDEN);
     }
@@ -213,7 +225,7 @@ export class UsersService {
       const userSub = await this.userModel.findById(subId);
       user.subscriptions.push(userSub);
       await user.save();
-      return user.subscriptions;
+      return (await this.getUserInDetail(userId)).subscriptions;
     } catch {
       throw new HttpException(
         'The user id is specified incorrectly',
@@ -230,7 +242,7 @@ export class UsersService {
     const subsArr = user.subscriptions.filter((e) => e.id !== subsId);
     user.subscriptions = [...subsArr];
     await user.save();
-    return user.subscriptions;
+    return (await this.getUserInDetail(userId)).subscriptions;
   }
 
   async updateLastActivity(userId: string) {
