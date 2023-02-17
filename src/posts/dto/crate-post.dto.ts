@@ -10,8 +10,8 @@ export class CreatePostDto {
 
   @IsNotEmpty({ message: 'Text field should not be empty' })
   @IsString({ message: 'Text should be string' })
-  @Length(10, 600, {
-    message: 'Text length Must be between 10 and 600 charcters',
+  @Length(10, 10000, {
+    message: 'Text length Must be between 10 and 10000 charcters',
   })
   readonly text: string;
 }

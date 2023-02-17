@@ -113,6 +113,12 @@ export class PostsService {
       await post.populate('comments');
       post.comments.push(comment);
       await post.save();
+      await post.populate([
+        {
+          path: 'comments',
+          populate: { path: 'author', populate: { path: 'avatar' } },
+        },
+      ]);
       return post.comments;
     } catch {
       throw new HttpException(

@@ -36,7 +36,7 @@ export class FilesService {
     }
     if (file.size > 5000000) {
       throw new HttpException(
-        'File size must be less than 10 megabytes!',
+        'File size must be less than 5 megabytes!',
         HttpStatus.BAD_REQUEST,
       );
     }
