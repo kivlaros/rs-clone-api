@@ -42,7 +42,7 @@ export class PostsService {
     });
     user.posts.push(post);
     await user.save();
-    return post;
+    return await this.getUserPosts(user.id);
   }
 
   async getAllPosts() {
@@ -63,7 +63,17 @@ export class PostsService {
   }
 
   async getUserPosts(id: ObjectId) {
-    return await this.postModel.find({ author: id });
+    const posts = await this.postModel.find({ author: id }).populate([
+      {
+        path: 'comments',
+        populate: { path: 'author', populate: { path: 'avatar' } },
+      },
+      {
+        path: 'author',
+        populate: { path: 'avatar' },
+      },
+    ]);
+    return posts.reverse();
   }
 
   async deletePost(req: Request, postId: ObjectId) {

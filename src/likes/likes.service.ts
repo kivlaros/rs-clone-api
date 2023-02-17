@@ -47,7 +47,19 @@ export class LikesService {
     const user = await this.usersService.getUserById(userId);
     try {
       const post = await this.postsService.getPostById(postId);
-      await post.populate('likes');
+      await post.populate([
+        {
+          path: 'comments',
+          populate: { path: 'author', populate: { path: 'avatar' } },
+        },
+        {
+          path: 'author',
+          populate: { path: 'avatar' },
+        },
+        {
+          path: 'likes',
+        },
+      ]);
       return await this.likesAddOrDelete(user, post);
     } catch {
       throw new HttpException(
