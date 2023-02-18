@@ -2,17 +2,18 @@ import { EventsModule } from './../events/events.module';
 import { Module } from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import { ChatsController } from './chats.controller';
-import { Message } from './schemas/message.schema';
 import { Chat, ChatSchema } from './schemas/chat.schema';
-import { CommentSchema } from 'src/posts/schemas/comment.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { NewMessage, NewMessageSchema } from './schemas/new-message.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Chat.name, schema: ChatSchema }]),
-    MongooseModule.forFeature([{ name: Message.name, schema: CommentSchema }]),
+    MongooseModule.forFeature([
+      { name: NewMessage.name, schema: NewMessageSchema },
+    ]),
     UsersModule,
     AuthModule,
     EventsModule,

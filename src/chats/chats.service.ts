@@ -4,18 +4,19 @@ import { Model } from 'mongoose';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { Chat, ChatDocument } from './schemas/chat.schema';
-import { Message, MessageDocument } from './schemas/message.schema';
 import { Request } from 'express';
 import { ObjectId } from 'mongoose';
 import { UserDocument } from 'src/users/schemas/user.schema';
 import { MessageDto } from './dto/message.dto';
 import { EventsService } from 'src/events/events.service';
+import { NewMessage, NewMessageDocument } from './schemas/new-message.schema';
 
 @Injectable()
 export class ChatsService {
   constructor(
     @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectModel(NewMessage.name)
+    private messageModel: Model<NewMessageDocument>,
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly eventsService: EventsService,
@@ -89,9 +90,9 @@ export class ChatsService {
     const chat = await this.chatModel.findById(id);
     const message = await this.messageModel.create({
       ...dto,
+      isread: false,
       author: user._id,
       date: new Date(),
-      isRead: false,
     });
     await chat.populate('messages');
     chat.messages.push(message); //???
@@ -106,6 +107,7 @@ export class ChatsService {
         populate: { path: 'avatar' },
       },
     ]);
+    this.setIsRead(chat.messages, userId._id);
     this.eventsService.emit(id.toString(), chat); //событие чата
     return chat.messages;
   }
@@ -126,10 +128,21 @@ export class ChatsService {
     return chat;
   }
 
-  async setIsRead(messages: MessageDocument[], id: ObjectId) {
+  async setIsRead(messages: NewMessageDocument[], id: ObjectId) {
+    console.log(messages);
     const filtredMeassges = messages.filter((e) => e.author.id !== id);
     for (const message of filtredMeassges) {
-      message.isRead = true;
+      message.isread = true;
+      message.save();
+    }
+  }
+
+  async messagesToFalse() {
+    const messages = await this.messageModel.find();
+    console.log(messages);
+    for (const message of messages) {
+      console.log(message.isread);
+      message.isread = false;
       message.save();
     }
   }

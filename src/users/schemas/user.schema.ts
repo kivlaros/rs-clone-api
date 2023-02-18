@@ -18,6 +18,9 @@ export class User {
   @Prop()
   name: string;
 
+  @Prop()
+  email: string;
+
   @ApiProperty()
   @Prop()
   password: string;
@@ -30,10 +33,19 @@ export class User {
   isOnline: boolean;
 
   @Prop()
+  background: string;
+
+  @Prop()
+  audio: string[];
+
+  @Prop()
   lastVisit: Date;
   @ApiProperty()
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   subscriptions: UserDocument[];
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  subscribers: UserDocument[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UImage' }] })
   gallery: UImageDocument[];

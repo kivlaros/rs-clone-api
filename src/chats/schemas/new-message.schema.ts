@@ -3,10 +3,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { UserDocument } from 'src/users/schemas/user.schema';
 
-export type MessageDocument = HydratedDocument<Message>;
+export type NewMessageDocument = HydratedDocument<NewMessage>;
 
 @Schema()
-export class Message {
+export class NewMessage {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   author: UserDocument;
 
@@ -20,4 +20,4 @@ export class Message {
   isread: boolean;
 }
 
-export const MessageSchema = SchemaFactory.createForClass(Message);
+export const NewMessageSchema = SchemaFactory.createForClass(NewMessage);

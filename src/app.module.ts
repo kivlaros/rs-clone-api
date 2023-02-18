@@ -16,7 +16,7 @@ import { EventsModule } from './events/events.module';
       rootPath: path.resolve(__dirname, '..', 'static'),
     }),
     MongooseModule.forRoot(
-      'mongodb+srv://jh0ske:e0Jo3mvxwArkK1PB@cluster0.gebarog.mongodb.net/?retryWrites=true&w=majority',
+      'mongodb+srv://jh0ske:xUMaNI8PBaxnea4R@vk-api.liwy0ht.mongodb.net/?retryWrites=true&w=majority',
     ),
     UsersModule,
     PostsModule,
