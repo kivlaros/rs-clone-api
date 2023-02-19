@@ -175,6 +175,10 @@ export class UsersService {
       {
         path: 'likes',
       },
+      {
+        path: 'comments',
+        populate: { path: 'author', populate: { path: 'avatar' } },
+      },
     ]);
     return images
       .filter(
@@ -224,25 +228,42 @@ export class UsersService {
     try {
       const userSub = await this.userModel.findById(subId);
       user.subscriptions.push(userSub);
+      userSub.subscribers.push(user);
+      userSub.save();
       await user.save();
       return (await this.getUserInDetail(userId)).subscriptions;
-    } catch {
+    } catch (e) {
       throw new HttpException(
-        'The user id is specified incorrectly',
+        'The user id is specified incorrectly' + `${e}`,
         HttpStatus.FORBIDDEN,
       );
     }
   }
 
   async deleteFromSubs(request: Request, subsId: ObjectId) {
-    const userId = this.tokenDecrypt(request)._id;
-    const user = await this.userModel
-      .findById(userId)
-      .populate('subscriptions');
-    const subsArr = user.subscriptions.filter((e) => e.id !== subsId);
-    user.subscriptions = [...subsArr];
-    await user.save();
-    return (await this.getUserInDetail(userId)).subscriptions;
+    try {
+      const userId = this.tokenDecrypt(request)._id;
+      const user = await this.userModel
+        .findById(userId)
+        .populate('subscriptions');
+      const subsArr = user.subscriptions.filter((e) => e.id !== subsId);
+      user.subscriptions = [...subsArr];
+      await user.save();
+      const userTarget = await this.userModel
+        .findById(subsId)
+        .populate('subscribers');
+      const targetSubsArr = userTarget.subscribers.filter(
+        (e) => e.id !== userId,
+      );
+      userTarget.subscribers = [...targetSubsArr];
+      userTarget.save();
+      return (await this.getUserInDetail(userId)).subscriptions;
+    } catch {
+      throw new HttpException(
+        "you can't delete something that isn't there",
+        HttpStatus.FORBIDDEN,
+      );
+    }
   }
 
   async updateLastActivity(userId: string) {

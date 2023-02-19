@@ -61,7 +61,16 @@ export class PostsController {
     @Body() dto: CreateCommentDto,
     @Param('id') id: ObjectId,
   ) {
-    console.log('fffffff');
     return this.postsService.createComment(req, dto, id);
+  }
+
+  @Post('/image/comment/:id')
+  @UseGuards(CommonAuthGuard)
+  createImgComment(
+    @Req() req: Request,
+    @Body() dto: CreateCommentDto,
+    @Param('id') id: ObjectId,
+  ) {
+    return this.postsService.createImgComment(req, dto, id);
   }
 }

@@ -127,4 +127,31 @@ export class PostsService {
       );
     }
   }
+
+  async createImgComment(req: Request, dto: CreateCommentDto, id: ObjectId) {
+    try {
+      const userId = this.authService.tokenDecrypt(req);
+      const user = await this.usersService.getUserById(userId);
+      const image = await this.usersService.getImageById(id);
+      const comment = await this.commentModel.create({
+        text: dto.text,
+        date: new Date(),
+        author: user._id,
+      });
+      image.comments.push(comment.id);
+      await image.save();
+      await image.populate([
+        {
+          path: 'comments',
+          populate: { path: 'author', populate: { path: 'avatar' } },
+        },
+      ]);
+      return image.comments;
+    } catch {
+      throw new HttpException(
+        'The image does not exist or you do not have enough rights',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+  }
 }
