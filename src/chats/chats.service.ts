@@ -20,7 +20,9 @@ export class ChatsService {
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly eventsService: EventsService,
-  ) {}
+  ) {
+    //this.checkCycleOfUnreadMesages();
+  }
 
   async create(req: Request, targetId: ObjectId) {
     const userId = this.authService.tokenDecrypt(req);
@@ -107,9 +109,13 @@ export class ChatsService {
         populate: { path: 'avatar' },
       },
     ]);
-    this.setIsRead(chat.messages, userId._id);
-    this.eventsService.emit(id.toString(), chat); //событие чата
-    return chat.messages;
+    try {
+      this.eventsService.emit(id.toString(), chat); //событие чата
+      return chat.messages;
+    } finally {
+      this.setIsRead(chat.messages, userId._id);
+      this.emitMessage(userId._id.toString(), chat);
+    }
   }
 
   async getChatByID(id: ObjectId, req: Request) {
@@ -124,26 +130,65 @@ export class ChatsService {
         populate: { path: 'avatar' },
       },
     ]);
-    this.setIsRead(chat.messages, userId);
-    return chat;
+    try {
+      return chat;
+    } finally {
+      this.setIsRead(chat.messages, userId);
+    }
   }
 
   async setIsRead(messages: NewMessageDocument[], id: ObjectId) {
-    console.log(messages);
     const filtredMeassges = messages.filter((e) => e.author.id !== id);
     for (const message of filtredMeassges) {
       message.isread = true;
-      message.save();
+      await message.save();
     }
+    const unreadCount = await this.getCurrentUnreadMassages(id.toString());
+    this.eventsService.emit(id.toString(), {
+      unread: unreadCount,
+      sound: false,
+    });
   }
 
-  async messagesToFalse() {
-    const messages = await this.messageModel.find();
-    console.log(messages);
-    for (const message of messages) {
-      console.log(message.isread);
-      message.isread = false;
-      message.save();
-    }
+  async emitMessage(id: string, chat: ChatDocument) {
+    const targetId = chat.users.find((e) => e.id !== id).id;
+    const unreadCount = await this.getCurrentUnreadMassages(targetId);
+    this.eventsService.emit(targetId, { unread: unreadCount, sound: true });
+  }
+
+  async getUnRead(req: Request) {
+    const userId = this.authService.tokenDecrypt(req);
+    const user = await this.usersService.getUserById(userId);
+    const result = await this.getCurrentUnreadMassages(user.id);
+    return { unread: result };
+  }
+
+  async getCurrentUnreadMassages(userId: string) {
+    const chats = await this.chatModel.find().populate(['messages', 'users']);
+    const userChats = chats.filter((e) =>
+      e.users.some((elem) => elem.id == userId),
+    );
+    return userChats.reduce((acc, e) => {
+      acc += e.messages.reduce((acc, e) => {
+        if (!e.isread && e.author._id.toString() !== userId) {
+          acc += 1;
+        }
+        return acc;
+      }, 0);
+      return acc;
+    }, 0);
+  }
+
+  checkCycleOfUnreadMesages() {
+    let total = 0;
+    setInterval(async () => {
+      const value = await this.getCurrentUnreadMassages(
+        '63f129bdbe00f20c1d59eb9a',
+      );
+      if (total !== value) {
+        console.log('unreadMessages= ' + value);
+        total = value;
+      }
+    }, 30000);
   }
 }

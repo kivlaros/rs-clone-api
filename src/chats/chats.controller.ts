@@ -34,6 +34,12 @@ export class ChatsController {
     return this.chatsService.getAllUserChats(req);
   }
 
+  @Get('unread')
+  @UseGuards(CommonAuthGuard)
+  getUnRead(@Req() req: Request) {
+    return this.chatsService.getUnRead(req);
+  }
+
   @Get(':id')
   @UseGuards(CommonAuthGuard)
   getChatById(@Param('id') id: ObjectId, @Req() req: Request) {

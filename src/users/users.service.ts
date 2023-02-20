@@ -61,6 +61,10 @@ export class UsersService {
         {
           path: 'avatar',
         },
+        {
+          path: 'subscribers',
+          populate: { path: 'avatar' },
+        },
       ]);
     } catch {
       throw new HttpException('User not found', HttpStatus.FORBIDDEN);
