@@ -260,7 +260,7 @@ export class UsersService {
         (e) => e.id !== userId,
       );
       userTarget.subscribers = [...targetSubsArr];
-      userTarget.save();
+      await userTarget.save();
       return await this.getUserInDetail(subsId);
     } catch {
       throw new HttpException(
