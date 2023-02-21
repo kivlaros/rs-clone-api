@@ -235,7 +235,7 @@ export class UsersService {
       userSub.subscribers.push(user);
       userSub.save();
       await user.save();
-      return (await this.getUserInDetail(userId)).subscriptions;
+      return await this.getUserInDetail(subId);
     } catch (e) {
       throw new HttpException(
         'The user id is specified incorrectly' + `${e}`,
@@ -261,7 +261,7 @@ export class UsersService {
       );
       userTarget.subscribers = [...targetSubsArr];
       userTarget.save();
-      return (await this.getUserInDetail(userId)).subscriptions;
+      return await this.getUserInDetail(subsId);
     } catch {
       throw new HttpException(
         "you can't delete something that isn't there",
