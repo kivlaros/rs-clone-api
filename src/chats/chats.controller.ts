@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Param,
   Post,
   Req,
@@ -57,6 +58,7 @@ export class ChatsController {
   }
 
   @Sse('/sse/:id')
+  @Header('X-Accel-Buffering', 'no')
   sse(@Param('id') id: ObjectId) {
     return this.eventsService.subscribe(id.toString());
   }
