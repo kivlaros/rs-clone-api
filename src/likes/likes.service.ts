@@ -26,6 +26,10 @@ export class LikesService {
       const image = await this.usersService.getImageById(imageId);
       await image.populate([
         {
+          path: 'comments',
+          populate: { path: 'author', populate: { path: 'avatar' } },
+        },
+        {
           path: 'author',
           populate: { path: 'avatar' },
         },
