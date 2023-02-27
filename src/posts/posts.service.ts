@@ -46,7 +46,7 @@ export class PostsService {
   }
 
   async getAllPosts() {
-    return await this.postModel.find().populate([
+    const posts = await this.postModel.find().populate([
       {
         path: 'comments',
         populate: { path: 'author', populate: { path: 'avatar' } },
@@ -56,6 +56,7 @@ export class PostsService {
         populate: { path: 'avatar' },
       },
     ]);
+    return posts.reverse();
   }
 
   async getPostById(id) {
