@@ -1,9 +1,12 @@
+import { ThemeDto } from './dto/theme.dto';
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   Post,
+  Put,
   Req,
   UploadedFile,
   UploadedFiles,
@@ -86,5 +89,11 @@ export class UsersController {
   @UseGuards(CommonAuthGuard)
   deleteFromSubs(@Req() request: Request, @Param('id') id: ObjectId) {
     return this.usersService.deleteFromSubs(request, id);
+  }
+
+  @Put('theme')
+  @UseGuards(CommonAuthGuard)
+  changeTheme(@Req() request: Request, @Body() dto: ThemeDto) {
+    return this.usersService.changeTheme(request, dto);
   }
 }

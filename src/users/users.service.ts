@@ -7,6 +7,7 @@ import { UImage, UImageDocument } from './schemas/uimage.schema';
 import { User, UserDocument } from './schemas/user.schema';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
+import { ThemeDto } from './dto/theme.dto';
 
 type TokenDecryptType = {
   username: string;
@@ -268,6 +269,17 @@ export class UsersService {
         HttpStatus.FORBIDDEN,
       );
     }
+  }
+
+  async changeTheme(request: Request, dto: ThemeDto) {
+    if (!dto || !dto.link) {
+      throw new HttpException('no data', HttpStatus.FORBIDDEN);
+    }
+    const userId = this.tokenDecrypt(request)._id;
+    const user = await this.userModel.findById(userId);
+    user.background = dto.link;
+    await user.save();
+    return { link: user.background };
   }
 
   async updateLastActivity(userId: string) {
