@@ -1,6 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class CreatePostDto {
+  @ApiProperty()
   @IsNotEmpty({ message: 'Headline field should not be empty' })
   @IsString({ message: 'Text should be string' })
   @Length(5, 50, {
@@ -8,6 +10,7 @@ export class CreatePostDto {
   })
   readonly headline: string;
 
+  @ApiProperty()
   @IsNotEmpty({ message: 'Text field should not be empty' })
   @IsString({ message: 'Text should be string' })
   @Length(10, 10000, {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateCommentDto {
+export class UnreadRespDto {
   @ApiProperty()
-  readonly text: string;
+  readonly unread: number;
 }

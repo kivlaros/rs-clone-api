@@ -18,6 +18,7 @@ export class User {
   @Prop()
   name: string;
 
+  @ApiProperty()
   @Prop()
   email: string;
 
@@ -29,30 +30,38 @@ export class User {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UImage' })
   avatar: UImageDocument;
 
+  @ApiProperty()
   @Prop()
   isOnline: boolean;
 
+  @ApiProperty()
   @Prop()
   background: string;
 
+  @ApiProperty()
   @Prop()
   audio: string[];
 
+  @ApiProperty()
   @Prop()
   lastVisit: Date;
   @ApiProperty()
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   subscriptions: UserDocument[];
 
+  @ApiProperty()
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   subscribers: UserDocument[];
 
+  @ApiProperty()
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UImage' }] })
   gallery: UImageDocument[];
 
+  @ApiProperty()
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UPost' }] })
   posts: UPostDocument[];
 
+  @ApiProperty()
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }] })
   chats: ChatDocument[];
 }

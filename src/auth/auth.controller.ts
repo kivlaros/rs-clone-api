@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { User } from 'src/users/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login.dto';
 import { ResLoginUserDto } from './dto/res-login.dto';
@@ -22,7 +21,7 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'Вход выполнен успешно',
-    type: User,
+    type: ResLoginUserDto,
   })
   @Post('registration')
   @UsePipes(new ValidationPipe({ transform: true }))

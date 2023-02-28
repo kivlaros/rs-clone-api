@@ -26,6 +26,7 @@ export class UImage {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }] })
   likes: LikeDocument[];
 
+  @ApiProperty()
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
   comments: CommentDocument[];
 }
