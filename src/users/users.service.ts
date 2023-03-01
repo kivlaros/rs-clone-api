@@ -284,8 +284,10 @@ export class UsersService {
 
   async updateLastActivity(userId: string) {
     const user = await this.userModel.findById(userId);
-    user.lastVisit = new Date();
-    await user.save();
+    if (user.lastVisit) {
+      user.lastVisit = new Date();
+      await user.save();
+    }
   }
 
   tokenDecrypt(req: Request): TokenDecryptType {
